@@ -15,7 +15,6 @@ function getHumanChoice() {
   return choice;
 }
 
-// changed this from returning winner based on numbers to winner based on string
 function playRound(humanChoice, computerChoice) {
   humanChoice = humanChoice.toLowerCase();
 
@@ -50,61 +49,69 @@ function playRound(humanChoice, computerChoice) {
   return roundWinner;
 }
 
-function checkGameWinner(humanScore, computerScore) {
+function updateHumanScore(humanScore) {
+  const humanScorePara = document.querySelector(".human-score");
+  humanScore += 1;
+  humanScorePara.textContent = `Human Score: ${humanScore}`;
+  return humanScore;
+}
+
+function updateComputerScore(computerScore) {
+  const computerScorePara = document.querySelector(".computer-score");
+  computerScore += 1;
+  computerScorePara.textContent = `Computer's Score: ${computerScore}`;
+  return computerScore;
+}
+
+function checkRoundWinner(roundWinner, humanScore, computerScore) {
+  if (roundWinner === "human") {
+    humanScore = updateHumanScore(humanScore);
+  } else if (roundWinner === "computer") {
+    computerScore = updateComputerScore(computerScore);
+  }
+  return [humanScore, computerScore];
+}
+
+function declareHumanWinner() {
+  const gameResults = document.querySelector(".game-results");
+  const winnerResult = document.createElement("p");
+  winnerResult.textContent = "You win the game!";
+  gameResults.append(winnerResult);
+}
+
+function declareHumanLoser() {
+  const gameResults = document.querySelector(".game-results");
+  const winnerResult = document.createElement("p");
+  winnerResult.textContent = "You lose the game!";
+  gameResults.append(winnerResult);
+}
+
+function checkGameScore(humanScore, computerScore) {
   if (humanScore === 5) {
-    const roundResults = document.querySelector(".game-results");
-    const winnerResult = document.createElement("p");
-    winnerResult.textContent = "You win the game!";
+    declareHumanWinner();
   } else if (computerScore === 5) {
-    const roundResults = document.querySelector(".game-results");
-    const winnerResult = document.createElement("p");
-    winnerResult.textContent = "You lose the game!";
+    declareHumanLoser();
   }
 }
 
-function playGame() {
+function playGame() { 
   let humanScore = 0;
-  let computerScore = 0;  
+  let computerScore = 0;
 
   const selectionButtons = document.querySelector(".buttons");
 
-  selectionButtons.addEventListener("click", (e) => {
+  selectionButtons.addEventListener("click", function handleSelectionButtonClick(e) {
     const computerSelection = getComputerChoice();
     const humanSelection = e.target.classList[0];
     const roundWinner = playRound(humanSelection, computerSelection);
     
-    const humanScorePara = document.querySelector(".human-score");
-    const computerScorePara = document.querySelector(".computer-score");
+    [humanScore, computerScore] = checkRoundWinner(roundWinner, humanScore, computerScore);
+    checkGameScore(humanScore, computerScore);
 
-    if (roundWinner === "human") {
-      humanScore += 1;
-      humanScorePara.textContent = `Human Score: ${humanScore}`;
-
-    } else if (roundWinner === "computer") {
-      computerScore += 1;
-      computerScorePara.textContent = `Computer's Score: ${computerScore}`;
-    }
-
-    if (humanScore === 5) {
-      const gameResults = document.querySelector(".game-results");
-      const winnerResult = document.createElement("p");
-      winnerResult.textContent = "You win the game!";
-      gameResults.append(winnerResult);
-    } else if (computerScore === 5) {
-      const gameResults = document.querySelector(".game-results");
-      const winnerResult = document.createElement("p");
-      winnerResult.textContent = "You lose the game!";
-      gameResults.append(winnerResult);
-    }
-  });
-
-  if (humanScore === 5 || computerScore === 5) {
-    return;
+    if (humanScore === 5 || computerScore === 5) {
+      selectionButtons.removeEventListener("click", handleSelectionButtonClick);
   }
+  });
 }
 
 playGame();
-
-// create initialize game function? (storing )
-
-
